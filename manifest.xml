@@ -16,4 +16,5 @@
   <depend package="dummy-dependency-n" />
   -->
   <depend package="bundles/rock" />
+  <depend package="simulation/rock_gazebo" />
 </package>
