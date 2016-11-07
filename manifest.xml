@@ -17,4 +17,5 @@
   -->
   <depend package="bundles/rock" />
   <depend package="simulation/rock_gazebo" />
+  <test_depend package="timecop" />
 </package>
