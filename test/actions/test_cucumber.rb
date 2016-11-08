@@ -45,15 +45,26 @@ module Cucumber
                     assert_equal tol_q, task.orientation_tolerance
                     assert_equal 20, task.timeout
                 end
+            end
 
-                it "uses the model as the pose provider" do
+            describe "cucumber_maintain_pose" do
+                it "creates a MaintainPose composition with the expected pose, tolerances and duration" do
                     pose = Types.base.Pose.new
                     pose.position = Eigen::Vector3.Zero
                     pose.orientation = Eigen::Quaternion.Identity
 
-                    task = plan.add_permanent_task(cucumber_warp_robot.with_arguments(pose: pose))
+                    task = plan.add_permanent_task(
+                        cucumber_maintain_pose.with_arguments(
+                            pose: pose,
+                            position_tolerance: (tol_p = Eigen::Vector3.new),
+                            orientation_tolerance: (tol_q = Eigen::Quaternion.from_angle_axis(0.1, Eigen::Vector3.UnitZ)),
+                            duration: 20))
                     task = roby_run_planner(task)
-                    assert_same task.model_child, task.pose_child
+                    assert_kind_of Compositions::MaintainPose, task
+                    assert_equal pose, task.pose
+                    assert_equal tol_p, task.position_tolerance
+                    assert_equal tol_q, task.orientation_tolerance
+                    assert_equal 20, task.duration
                 end
             end
         end
