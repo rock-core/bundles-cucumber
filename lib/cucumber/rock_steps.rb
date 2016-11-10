@@ -1,6 +1,6 @@
 require 'cucumber/rock_helpers'
 
-Given(/the (\w+) robot starts at (.*) in (?:the )?(.*)/) do |robot_name, start_position, world|
+Given(/the (\w+) robot starting at (.*) in (?:the )?(.*)/) do |robot_name, start_position, world|
     if start_position == 'origin'
         start_position = Hash[x: 0, y: 0, z: 0, yaw: 0]
     else
