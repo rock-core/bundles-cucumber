@@ -30,6 +30,7 @@ module Cucumber
                             orientation: sample.orientation)
                         if !within_tolerance?(sample)
                             exceeds_tolerance_event.emit(last_pose)
+                            break
                         end
                     end
                 end
