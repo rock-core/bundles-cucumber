@@ -12,7 +12,21 @@ module Cucumber
                 assert_equal Eigen::Vector3.new(10, 15, 20), pose.position
             end
 
-            it "leaves unset translation fields to Base.unset" do
+            it "provides a useful message if one forgets the unit" do
+                e = assert_raises(RockHelpers::InvalidSyntax) do
+                    RockHelpers.parse_pose("x=10")
+                end
+                assert_equal "the value provided for 'x' is not valid. Have you forgotten to put a valid unit ?",
+                    e.message
+            end
+            it "provides a useful message if one uses an invalid parameter name" do
+                e = assert_raises(RockHelpers::InvalidSyntax) do
+                    RockHelpers.parse_pose("invalid=10")
+                end
+                assert_equal "'invalid' is not a valid pose parameter",
+                    e.message
+            end
+
             it "leaves unset translation fields to 0" do
                 pose = RockHelpers.parse_pose("x=10m and z=20m")
                 assert_equal Eigen::Vector3.new(10, 0, 20), pose.position
@@ -37,6 +51,27 @@ module Cucumber
         end
 
         describe ".parse_pose_and_tolerance" do
+            it "provides a useful message if one forgets the unit in the pose" do
+                e = assert_raises(RockHelpers::InvalidSyntax) do
+                    RockHelpers.parse_pose("x=10")
+                end
+                assert_equal "the value provided for 'x' is not valid. Have you forgotten to put a valid unit ?",
+                    e.message
+            end
+            it "provides a useful message if one uses an invalid parameter name in the pose" do
+                e = assert_raises(RockHelpers::InvalidSyntax) do
+                    RockHelpers.parse_pose("invalid=10")
+                end
+                assert_equal "'invalid' is not a valid pose parameter",
+                    e.message
+            end
+            it "provides a useful message if one forgets the unit in the tolerance" do
+                e = assert_raises(RockHelpers::InvalidSyntax) do
+                    RockHelpers.parse_pose_and_tolerance("x=10m", "10")
+                end
+                assert_equal "the value provided for 'x' is not valid. Have you forgotten to put a valid unit ?",
+                    e.message
+            end
             it "returns a pose and the corresponding tolerance with the relevant translation fields filled" do
                 pose, position_tolerance, orientation_tolerance =
                     RockHelpers.parse_pose_and_tolerance("x=10m, y=15m and z=20m", "1m, 2m and 3m")

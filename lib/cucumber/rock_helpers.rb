@@ -3,7 +3,20 @@ module Cucumber
     module RockHelpers
         def self.parse_pose(pose_text)
             args = Roby::App::CucumberHelpers.parse_arguments(pose_text)
+            validate_pose_hash(args)
             hash_to_pose(args)
+        end
+
+        POSE_PARAMETERS = [:x, :y, :z, :yaw, :pitch, :roll]
+
+        class InvalidSyntax < ArgumentError; end
+
+        def self.validate_pose_hash(hash)
+            if invalid_key = hash.each_key.find { |k| !POSE_PARAMETERS.include?(k) }
+                raise InvalidSyntax, "'#{invalid_key}' is not a valid pose parameter"
+            elsif invalid = hash.find { |k, v| !v.kind_of?(Numeric) }
+                raise InvalidSyntax, "the value provided for '#{invalid[0]}' is not valid. Have you forgotten to put a valid unit ?"
+            end
         end
 
         def self.hash_to_pose(args, default_position: 0)
@@ -24,8 +37,10 @@ module Cucumber
 
         def self.parse_pose_and_tolerance(pose_text, tolerance_text)
             pose_args = Roby::App::CucumberHelpers.parse_arguments(pose_text)
+            validate_pose_hash(pose_args)
             tolerance_args = Roby::App::CucumberHelpers.
                 parse_arguments_respectively(pose_args.keys, tolerance_text)
+            validate_pose_hash(tolerance_args)
 
             pose = hash_to_pose(pose_args, default_position: 0)
             position_tolerance = hash_xyz_to_vector3(tolerance_args, default: Float::INFINITY)
