@@ -7,9 +7,9 @@ Given(/the (\w+) robot starts at (.*) in (?:the )?(.*)/) do |robot_name, start_p
         start_position = Roby::App::CucumberHelpers.parse_arguments(start_position)
     end
     world = world.gsub(/\s/, '_')
-    gazebo_start world
     roby_controller.roby_start robot_name, robot_name,
         state: Hash['gazebo.world_file_path' => world]
+    gazebo_start world, working_directory: roby_controller.roby_log_dir
 
     x, y, z, yaw = start_position.values_at(:x, :y, :z, :yaw)
     pose = Types.base.Pose.new(
