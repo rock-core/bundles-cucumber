@@ -32,11 +32,19 @@ Then(/the pose reaches (.*) with a tolerance of (.*) within (.*)/) do |pose, tol
         pose: pose, position_tolerance: position_tolerance,
         orientation_tolerance: orientation_tolerance, timeout: timeout
 end
-Then(/the pose is maintained at (.*) with a tolerance of (.*) during (.*)/) do |pose, tolerance, timeout|
+Then(/the pose is maintained at (.*) with a tolerance of (.*)/) do |pose, tolerance|
+    description = "The pose is maintained at #{pose} with a tolerance of #{tolerance}"
     pose, position_tolerance, orientation_tolerance = Cucumber::RockHelpers.parse_pose_and_tolerance(pose, tolerance)
-    timeout, _ = Roby::App::CucumberHelpers.parse_numerical_value(timeout)
+    roby_controller.start_monitoring_job description, 'cucumber_maintain_pose',
+        pose: pose, duration: nil,
+        position_tolerance: position_tolerance,
+        orientation_tolerance: orientation_tolerance
+end
+Then(/the pose is maintained at (.*) with a tolerance of (.*) during (.*)/) do |pose, tolerance, duration|
+    pose, position_tolerance, orientation_tolerance = Cucumber::RockHelpers.parse_pose_and_tolerance(pose, tolerance)
+    duration, _ = Roby::App::CucumberHelpers.parse_numerical_value(duration)
     roby_controller.run_job 'cucumber_maintain_pose',
-        pose: pose, timeout: timeout,
+        pose: pose, duration: duration,
         position_tolerance: position_tolerance,
         orientation_tolerance: orientation_tolerance
 end

@@ -45,6 +45,18 @@ module Cucumber
                 end
             end
 
+            it "ignores the duration if none is provided" do
+                maintain_pose = syskit_stub_and_deploy(
+                    MaintainPose.with_arguments(pose: pose, duration: nil))
+                maintain_pose.position_tolerance = Eigen::Vector3.new
+                maintain_pose.orientation_tolerance = Eigen::Vector3.new
+                syskit_configure_and_start(maintain_pose)
+                Timecop.travel(10) do
+                    process_events
+                    assert maintain_pose.running?
+                end
+            end
+
             it "fails if a sample outside tolerance is received" do
                 maintain_pose.position_tolerance = Eigen::Vector3.new
                 maintain_pose.orientation_tolerance = Eigen::Vector3.new

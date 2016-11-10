@@ -16,7 +16,7 @@ module Cucumber
                 pose_r = pose_child.pose_samples_port.reader
 
                 poll_until(success_event) do
-                    if lifetime > duration
+                    if duration && (lifetime > duration)
                         if last_pose
                             success_event.emit
                         else
