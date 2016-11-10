@@ -77,6 +77,20 @@ module Cucumber
                 process_events
                 assert reach_pose.running?
             end
+
+            it "emits success if the pose and timeout are reached at the same time" do
+                reach_pose.position_tolerance = Eigen::Vector3.new
+                reach_pose.orientation_tolerance = Eigen::Vector3.new
+                syskit_configure_and_start(reach_pose)
+                reach_pose.pose_child.orocos_task.pose_samples.
+                    write(sample = Types.base.samples.RigidBodyState.new)
+                flexmock(reach_pose).should_receive(:within_tolerance?).and_return(true)
+
+                Timecop.travel(10) do
+                    assert_event_emission reach_pose.success_event
+                end
+                assert !reach_pose.failed_event.emitted?
+            end
         end
     end
 end

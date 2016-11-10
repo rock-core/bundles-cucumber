@@ -13,7 +13,7 @@ module Cucumber
             forward :no_samples => :failed
 
             script do
-                pose_r = pose_child.pose_samples_port.reader(type: :buffer, size: 100)
+                pose_r = pose_child.pose_samples_port.reader
 
                 poll_until(success_event) do
                     if lifetime > duration
@@ -24,7 +24,7 @@ module Cucumber
                         end
                     end
 
-                    while sample = pose_r.read_new
+                    if sample = pose_r.read_new
                         @last_pose = Types.base.Pose.new(
                             position: sample.position,
                             orientation: sample.orientation)

@@ -12,20 +12,19 @@ module Cucumber
             attr_reader :matching_pose
 
             script do
-                pose_r = pose_child.pose_samples_port.reader(type: :buffer, size: 100)
+                pose_r = pose_child.pose_samples_port.reader
 
                 poll_until(success_event) do
-                    while sample = pose_r.read_new
+                    if sample = pose_r.read_new
                         @last_pose = sample
-                        if within_tolerance?(sample)
-                            @matching_pose = Types.base.Pose.new(
-                                position: sample.position,
-                                orientation: sample.orientation)
-                            success_event.emit(matching_pose)
-                        end
                     end
 
-                    if !matching_pose && timeout && (lifetime > timeout)
+                    if sample && within_tolerance?(sample)
+                        @matching_pose = Types.base.Pose.new(
+                            position: sample.position,
+                            orientation: sample.orientation)
+                        success_event.emit(matching_pose)
+                    elsif timeout && (lifetime > timeout)
                         timed_out_event.emit(last_pose)
                     end
                 end
