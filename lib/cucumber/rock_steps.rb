@@ -22,8 +22,8 @@ end
 When(/it runs the (.*) (action|definition) with (.*)/) do |action_name, action_kind, raw_arguments|
     action_name = Cucumber::RockHelpers.massage_action_name(action_name, action_kind)
     arguments   = Roby::App::CucumberHelpers.parse_arguments(raw_arguments)
-    roby_controller.start_job action_name, 
-        **arguments
+    roby_controller.start_job "When it runs #{action_name} with #{raw_arguments}",
+        action_name, **arguments
 end
 Then(/the pose reaches (.*) with a tolerance of (.*) within (.*)/) do |pose, tolerance, timeout|
     pose, position_tolerance, orientation_tolerance = Cucumber::RockHelpers.parse_pose_and_tolerance(pose, tolerance)
