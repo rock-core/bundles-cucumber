@@ -13,10 +13,9 @@ module Cucumber
             end
 
             it "leaves unset translation fields to Base.unset" do
+            it "leaves unset translation fields to 0" do
                 pose = RockHelpers.parse_pose("x=10m and z=20m")
-                assert_equal 10, pose.position.x
-                assert Base.unset?(pose.position.y)
-                assert_equal 20, pose.position.z
+                assert_equal Eigen::Vector3.new(10, 0, 20), pose.position
             end
 
             it "returns the identity orientation if no other rotations are provided" do
@@ -45,15 +44,11 @@ module Cucumber
                 assert_equal Eigen::Vector3.new(1, 2, 3), position_tolerance
             end
 
-            it "leaves pose and tolerance fields to unset if they are not set" do
+            it "sets pose to zero and tolerance field to infinity if they are not set" do
                 pose, position_tolerance, orientation_tolerance =
                     RockHelpers.parse_pose_and_tolerance("x=10m and z=20m", "1m and 3m")
-                assert_equal 10, pose.position.x
-                assert Base.unset?(pose.position.y)
-                assert_equal 20, pose.position.z
-                assert_equal 1, position_tolerance.x
-                assert Base.unset?(position_tolerance.y)
-                assert_equal 3, position_tolerance.z
+                assert_equal Eigen::Vector3.new(10, 0, 20), pose.position
+                assert_equal Eigen::Vector3.new(1, Float::INFINITY, 3), position_tolerance
             end
 
             it "leaves orientation tolerance fields as rpy" do
@@ -65,13 +60,13 @@ module Cucumber
                 assert (radians - orientation_tolerance).norm < 1e-4
             end
 
-            it "leaves orientation fields to unset if they are not provided" do
+            it "leaves the orientation tolerance to infinity if it is not provided" do
                 pose, position_tolerance, orientation_tolerance =
                     RockHelpers.parse_pose_and_tolerance("yaw=1deg and roll=3deg", "0.1deg and 0.3deg")
                 radians = Eigen::Vector3.new(*[1, 0, 3].map { |deg| deg * Math::PI / 180 })
                 assert (radians - pose.orientation.to_euler).norm < 1e-4
                 assert_in_delta 0.1 * Math::PI / 180, orientation_tolerance.x, 1e-4
-                assert Base.unset?(orientation_tolerance.y)
+                assert_equal Float::INFINITY, orientation_tolerance.y
                 assert_in_delta 0.3 * Math::PI / 180, orientation_tolerance.z, 1e-4
             end
         end
