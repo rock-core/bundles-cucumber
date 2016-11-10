@@ -70,5 +70,14 @@ module Cucumber
                 assert_in_delta 0.3 * Math::PI / 180, orientation_tolerance.z, 1e-4
             end
         end
+
+        describe ".massage_action_name" do
+            it "adds a _def suffix to the action name if the type is 'definition'" do
+                assert_equal "a_definition_name_def", RockHelpers.massage_action_name("a definition name", "definition")
+            end
+            it "returns the action name if the type is not 'definition'" do
+                assert_equal "a_definition_name", RockHelpers.massage_action_name("a definition name", "action")
+            end
+        end
     end
 end

@@ -19,8 +19,8 @@ Given(/the (\w+) robot starts at (.*) in (?:the )?(.*)/) do |robot_name, start_p
         pose: pose
 
 end
-When(/it runs (.*) with (.*)/) do |action_name, raw_arguments|
-    action_name = action_name.gsub(/\s/, '_')
+When(/it runs the (.*) (action|definition) with (.*)/) do |action_name, action_kind, raw_arguments|
+    action_name = Cucumber::RockHelpers.massage_action_name(action_name, action_kind)
     arguments   = Roby::App::CucumberHelpers.parse_arguments(raw_arguments)
     roby_controller.start_job action_name, 
         **arguments

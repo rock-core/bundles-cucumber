@@ -36,6 +36,14 @@ module Cucumber
             orientation_tolerance.z = tolerance_args.fetch(:roll, Float::INFINITY)
             return pose, position_tolerance, orientation_tolerance
         end
+
+        def self.massage_action_name(action_name, action_kind)
+            action_name = action_name.gsub(/\s/, '_')
+            if action_kind == 'definition'
+                "#{action_name}_def"
+            else action_name
+            end
+        end
     end
 end
 
