@@ -19,6 +19,11 @@ Given(/^the (\w+) robot starting at (.*) in (?:the )?(.*)$/) do |robot_name, sta
         pose: pose
 
 end
+When(/^it runs the (.*) (action|definition)$/) do |action_name, action_kind|
+    action_name = Cucumber::RockHelpers.massage_action_name(action_name, action_kind)
+    roby_controller.start_job "When it runs #{action_name}",
+        action_name
+end
 When(/^it runs the (.*) (action|definition) with (.*)$/) do |action_name, action_kind, raw_arguments|
     action_name = Cucumber::RockHelpers.massage_action_name(action_name, action_kind)
     arguments   = Roby::App::CucumberHelpers.parse_arguments(raw_arguments)
