@@ -1,6 +1,7 @@
 require 'models/compositions/warp_robot'
 require 'models/compositions/reach_pose'
 require 'models/compositions/maintain_pose'
+require 'models/tasks/job_emits_event'
 
 module Cucumber
     module Actions
@@ -32,6 +33,15 @@ module Cucumber
                 returns(Compositions::MaintainPose)
             def cucumber_maintain_pose(arguments)
                 Compositions::MaintainPose.with_arguments(arguments)
+            end
+
+            describe('verifies that an event is emitted within a certain timeframe').
+                required_arg(:timeout, 'the time in seconds after which the task fails if the event is still not emitted').
+                required_arg(:event_name, 'the name of the event').
+                required_arg(:monitored_job_id, 'the job ID of the task being watched').
+                returns(Tasks::JobEmitsEvent)
+            def cucumber_job_emits_event(arguments)
+                Tasks::JobEmitsEvent.new(arguments)
             end
         end
     end
