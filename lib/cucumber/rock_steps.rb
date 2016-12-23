@@ -8,7 +8,7 @@ Given(/^the (\w+) robot starting at (.*) in (?:the )?(.*)$/) do |robot_name, sta
     end
     world = world.gsub(/\s/, '_')
     roby_controller.roby_start robot_name, robot_name,
-        state: Hash['gazebo.world_file_path' => world]
+        state: Hash['gazebo.world_file_path' => world, 'gazebo.localhost' => true]
     gazebo_start world, working_directory: roby_controller.roby_log_dir
 
     x, y, z, yaw = start_position.values_at(:x, :y, :z, :yaw)
