@@ -7,7 +7,7 @@ module Cucumber
         # a Gazebo environment
         class WarpRobot < ReachPose
             argument :position_tolerance, default: Eigen::Vector3.new(0.5, 0.5, 0.5)
-            argument :orientation_tolerance, default: Eigen::Vector3.new(0.2, 0.2, 0.2)
+            argument :orientation_tolerance, default: Eigen::Vector3.new(0.02, 0.02, 0.02)
             argument :timeout, default: 10
 
             # The model that will be warped
