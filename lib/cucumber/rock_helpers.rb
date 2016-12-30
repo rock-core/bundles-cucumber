@@ -2,7 +2,7 @@ require 'roby/app/cucumber/helpers'
 module Cucumber
     module RockHelpers
         def self.parse_pose(pose_text)
-            args = Roby::App::CucumberHelpers.parse_arguments(pose_text)
+            args = Roby::App::CucumberHelpers.parse_arguments(pose_text, POSE_QUANTITIES, strict: true)
             validate_pose_hash(args)
             hash_to_pose(args)
         end
@@ -35,12 +35,12 @@ module Cucumber
             v
         end
 
+        POSE_QUANTITIES = Hash[x: :length, y: :length, z: :length, yaw: :angle, pitch: :angle, roll: :angle]
+
         def self.parse_pose_and_tolerance(pose_text, tolerance_text)
-            pose_args = Roby::App::CucumberHelpers.parse_arguments(pose_text)
-            validate_pose_hash(pose_args)
+            pose_args = Roby::App::CucumberHelpers.parse_arguments(pose_text, POSE_QUANTITIES, strict: true)
             tolerance_args = Roby::App::CucumberHelpers.
-                parse_arguments_respectively(pose_args.keys, tolerance_text)
-            validate_pose_hash(tolerance_args)
+                parse_arguments_respectively(pose_args.keys, tolerance_text, POSE_QUANTITIES, strict: true)
 
             pose = hash_to_pose(pose_args, default_position: 0)
             position_tolerance = hash_xyz_to_vector3(tolerance_args, default: Float::INFINITY)
