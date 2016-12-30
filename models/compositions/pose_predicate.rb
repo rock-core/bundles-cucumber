@@ -46,6 +46,12 @@ module Cucumber
                 true
             end
 
+            def rbs_to_hash(rbs)
+                position    = Hash[[:x, :y, :z].zip(rbs.position.to_a)]
+                orientation = Hash[[:yaw, :pitch, :roll].zip(rbs.orientation.to_euler.to_a)]
+                position.merge(orientation)
+            end
+
             event :timed_out
             forward :timed_out => :failed
         end

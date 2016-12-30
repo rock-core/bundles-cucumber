@@ -29,8 +29,9 @@ module Cucumber
                             position: sample.position,
                             orientation: sample.orientation)
                         if !within_tolerance?(sample)
-                            exceeds_tolerance_event.emit(last_pose)
-                            break
+                            exceeds_tolerance_event.emit(
+                                Hash[expected: rbs_to_hash(self.pose),
+                                     actual: rbs_to_hash(@last_pose)])
                         end
                     end
                 end
