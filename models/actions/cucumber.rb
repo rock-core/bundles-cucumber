@@ -43,6 +43,12 @@ module Cucumber
             def cucumber_job_emits_event(arguments)
                 Tasks::JobEmitsEvent.new(arguments)
             end
+
+            describe('runs until the controller is settled').
+                returns(Tasks::Settle)
+            def cucumber_settle
+                Tasks::Settle.new
+            end
         end
     end
 end

@@ -11,6 +11,8 @@ Given(/^the (\w+) robot starting at (.*) in (?:the )?(.*)$/) do |robot_name, sta
         state: Hash['sdf.world_path' => world, 'gazebo.localhost' => true]
     gazebo_start world, working_directory: roby_controller.roby_log_dir
 
+    roby_controller.run_job 'cucumber_settle'
+
     x, y, z, yaw = start_position.values_at(:x, :y, :z, :yaw)
     pose = Types.base.Pose.new(
         position: Eigen::Vector3.new(x || 0, y || 0, z || 0),
