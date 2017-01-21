@@ -17,9 +17,13 @@ Given(/^the (\w+) robot starting at (.*) in (?:the )?(.*)$/) do |robot_name, sta
     pose = Types.base.Pose.new(
         position: Eigen::Vector3.new(x || 0, y || 0, z || 0),
         orientation: Eigen::Quaternion.from_angle_axis(yaw || 0, Eigen::Vector3.UnitZ))
-    roby_controller.run_job 'cucumber_warp_robot',
+    warp_job = roby_controller.start_job "Warping the robot", 'cucumber_warp_robot',
         pose: pose
-
+    roby_controller.run_job 'cucumber_reach_pose',
+        pose: pose, position_tolerance: Eigen::Vector3.new(0.01, 0.01, 0.5),
+        orientation_tolerance: Eigen::Vector3.new(0.001, 0.001, 0.001), timeout: 10
+    # The warp job is not a monitoring job, it's not automatically stopped by run_job
+    roby_controller.drop_jobs warp_job
 end
 When(/^it runs the (.*) (action|definition)$/) do |action_name, action_kind|
     action_name = Cucumber::RockHelpers.massage_action_name(action_name, action_kind)

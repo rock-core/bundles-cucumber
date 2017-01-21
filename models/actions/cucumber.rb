@@ -2,6 +2,7 @@ require 'models/compositions/warp_robot'
 require 'models/compositions/reach_pose'
 require 'models/compositions/maintain_pose'
 require 'models/tasks/job_emits_event'
+require 'models/tasks/settle'
 
 module Cucumber
     module Actions
@@ -11,8 +12,7 @@ module Cucumber
                 required_arg(:pose, 'the pose the robot should be placed at').
                 returns(Compositions::WarpRobot)
             def cucumber_warp_robot(arguments)
-                Compositions::WarpRobot.with_arguments(arguments).
-                    use('pose' => Compositions::WarpRobot.model_child)
+                Compositions::WarpRobot.with_arguments(arguments)
             end
 
             describe('verifies that the vehicle maintains a pose with tolerance for a specified amount of time').

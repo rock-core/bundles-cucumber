@@ -1,15 +1,13 @@
-require 'models/compositions/reach_pose'
+require 'models/compositions/pose_predicate'
 using_task_library 'rock_gazebo'
 
 module Cucumber
     module Compositions
         # A composition that encapsulates moving the robot to a desired place in
         # a Gazebo environment
-        class WarpRobot < ReachPose
-            argument :position_tolerance, default: Eigen::Vector3.new(0.5, 0.5, 0.5)
-            argument :orientation_tolerance, default: Eigen::Vector3.new(0.02, 0.02, 0.02)
-            argument :timeout, default: 10
-
+        #
+        # It never finished
+        class WarpRobot < Syskit::Composition
             # The model that will be warped
             #
             # When overloading the cucumber_warp_robot action, it is
