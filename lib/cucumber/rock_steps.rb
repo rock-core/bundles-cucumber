@@ -25,6 +25,12 @@ Given(/^the (\w+) robot starting at (.*) in (?:the )?(.*)$/) do |robot_name, sta
     # The warp job is not a monitoring job, it's not automatically stopped by run_job
     roby_controller.drop_jobs warp_job
 end
+When(/^after (.*)$/) do |delay|
+    delay, _ = Roby::App::CucumberHelpers.parse_numerical_value(delay, :time)
+    roby_controller.apply_current_batch
+    sleep(delay)
+end
+
 When(/^it runs the (.*) (action|definition)$/) do |action_name, action_kind|
     action_name = Cucumber::RockHelpers.massage_action_name(action_name, action_kind)
     roby_controller.start_job "When it runs #{action_name}",
