@@ -3,26 +3,36 @@ require 'models/actions/cucumber'
 module Cucumber
     module Actions
         describe Cucumber do
+            attr_reader :stub_interface_m
+            before do
+                stub_model_m  = syskit_stub_requirements(OroGen::RockGazebo::ModelTask)
+                @stub_interface_m = Cucumber.new_submodel do
+                    define_method(:stub_model_m) { stub_model_m }
+
+                    def cucumber_warp_robot(arguments)
+                        super.use('model' => stub_model_m)
+                    end
+
+                    def cucumber_reach_pose(arguments)
+                        super.use('pose' => stub_model_m)
+                    end
+
+                    def cucumber_maintain_pose(arguments)
+                        super.use('pose' => stub_model_m)
+                    end
+                end
+            end
+
             describe "cucumber_warp_robot" do
                 it "creates a WarpRobot composition with the expected pose" do
                     pose = Types.base.Pose.new
                     pose.position = Eigen::Vector3.Zero
                     pose.orientation = Eigen::Quaternion.Identity
 
-                    task = plan.add_permanent_task(cucumber_warp_robot.with_arguments(pose: pose))
+                    task = plan.add_permanent_task(stub_interface_m.cucumber_warp_robot.with_arguments(pose: pose))
                     task = roby_run_planner(task)
                     assert_kind_of Compositions::WarpRobot, task
                     assert_equal pose, task.pose
-                end
-
-                it "uses the model as the pose provider" do
-                    pose = Types.base.Pose.new
-                    pose.position = Eigen::Vector3.Zero
-                    pose.orientation = Eigen::Quaternion.Identity
-
-                    task = plan.add_permanent_task(cucumber_warp_robot.with_arguments(pose: pose))
-                    task = roby_run_planner(task)
-                    assert_same task.model_child, task.pose_child
                 end
             end
 
@@ -33,7 +43,7 @@ module Cucumber
                     pose.orientation = Eigen::Quaternion.Identity
 
                     task = plan.add_permanent_task(
-                        cucumber_reach_pose.with_arguments(
+                        stub_interface_m.cucumber_reach_pose.with_arguments(
                             pose: pose,
                             position_tolerance: (tol_p = Eigen::Vector3.new),
                             orientation_tolerance: (tol_q = Eigen::Quaternion.from_angle_axis(0.1, Eigen::Vector3.UnitZ)),
@@ -54,7 +64,7 @@ module Cucumber
                     pose.orientation = Eigen::Quaternion.Identity
 
                     task = plan.add_permanent_task(
-                        cucumber_maintain_pose.with_arguments(
+                        stub_interface_m.cucumber_maintain_pose.with_arguments(
                             pose: pose,
                             position_tolerance: (tol_p = Eigen::Vector3.new),
                             orientation_tolerance: (tol_q = Eigen::Quaternion.from_angle_axis(0.1, Eigen::Vector3.UnitZ)),

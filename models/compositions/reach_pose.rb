@@ -27,7 +27,7 @@ module Cucumber
                     elsif timeout && (lifetime > timeout)
                         timed_out_event.emit(
                             Hash[expected: rbs_to_hash(self.pose),
-                                 last_pose: rbs_to_hash(last_pose)])
+                                 last_pose: (rbs_to_hash(last_pose) if last_pose)])
                     end
                 end
             end

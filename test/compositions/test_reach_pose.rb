@@ -25,6 +25,14 @@ module Cucumber
                 end
             end
 
+            def assert_pose_in_event_equal(rbs, actual)
+                expected = Hash[x: rbs.position.x, y: rbs.position.y, z: rbs.position.z,
+                                yaw: rbs.orientation.yaw, pitch: rbs.orientation.pitch, roll: rbs.orientation.roll]
+                expected.each_key do |k|
+                    assert_in_delta expected[k], actual[k], 1e-6, "expected and actual values differ on #{k}: #{expected[k]} and #{actual[k]}"
+                end
+            end
+
             it "terminates successfully if the target is reached" do
                 reach_pose.position_tolerance = Eigen::Vector3.new
                 reach_pose.orientation_tolerance = Eigen::Vector3.new
@@ -45,7 +53,8 @@ module Cucumber
                 syskit_configure_and_start(reach_pose)
                 flexmock(reach_pose).should_receive(:within_tolerance?).never
                 event = assert_times_out
-                assert_equal [nil], event.context
+                assert_pose_in_event_equal pose, event.context.first[:expected]
+                assert_nil event.context.first[:last_pose]
             end
 
             it "times out if no pose samples within tolerance arrive" do
@@ -55,7 +64,9 @@ module Cucumber
                 reach_pose.pose_child.orocos_task.pose_samples.write(rbs)
                 flexmock(reach_pose).should_receive(:within_tolerance?).and_return(false)
                 event = assert_times_out
-                assert_equal [rbs], event.context
+
+                assert_pose_in_event_equal pose, event.context.first[:expected]
+                assert_pose_in_event_equal rbs, event.context.first[:last_pose]
             end
 
             it "does nothing if no pose samples arrive" do
