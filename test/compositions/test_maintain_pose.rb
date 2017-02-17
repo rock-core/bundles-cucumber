@@ -18,6 +18,15 @@ module Cucumber
                     MaintainPose.with_arguments(pose: pose, duration: 10))
             end
 
+            def assert_pose_in_event_equal(rbs, actual)
+                expected = Hash[x: rbs.position.x, y: rbs.position.y, z: rbs.position.z,
+                                yaw: rbs.orientation.yaw, pitch: rbs.orientation.pitch, roll: rbs.orientation.roll]
+                expected.each_key do |k|
+                    assert_in_delta expected[k], actual[k], 1e-6, "expected and actual values differ on #{k}: #{expected[k]} and #{actual[k]}"
+                end
+            end
+
+
             it "terminates successfully if the target pose is maintained within the expected duration" do
                 maintain_pose.position_tolerance = Eigen::Vector3.new
                 maintain_pose.orientation_tolerance = Eigen::Vector3.new
@@ -64,9 +73,10 @@ module Cucumber
                 maintain_pose.pose_child.orocos_task.pose_samples.write(rbs)
                 flexmock(maintain_pose).should_receive(:within_tolerance?).and_return(false)
                 plan.unmark_mission_task(maintain_pose)
+
                 event = assert_event_emission(maintain_pose.exceeds_tolerance_event, garbage_collect_pass: false)
-                rbs_as_pose = Types.base.Pose.new(position: rbs.position, orientation: rbs.orientation)
-                assert_equal [rbs_as_pose], event.context
+                assert_pose_in_event_equal pose, event.context.first[:expected]
+                assert_pose_in_event_equal rbs, event.context.first[:actual]
             end
         end
     end

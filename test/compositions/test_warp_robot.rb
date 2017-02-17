@@ -9,9 +9,7 @@ module Cucumber
                 pose.position = Eigen::Vector3.new(1, 2, 3)
                 pose.orientation = Eigen::Quaternion.from_angle_axis(0.1, Eigen::Vector3.UnitX)
                 @warp_task = syskit_stub_deploy_and_configure(
-                    WarpRobot.
-                        with_arguments(pose: pose).
-                        use('pose' => WarpRobot.model_child))
+                    WarpRobot.with_arguments(pose: pose))
                 syskit_start_execution_agents(warp_task.model_child)
                 @in_port  = warp_task.model_child.orocos_task.model_pose
                 @out_port = warp_task.model_child.orocos_task.pose_samples
@@ -34,13 +32,6 @@ module Cucumber
                 pose = assert_has_one_new_sample(in_port)
                 assert_equal pose.position, pose.position
                 assert_equal pose.orientation, pose.orientation
-            end
-
-            it "emits success when the pose sample port writes the expected pose" do
-                sample = assert_has_one_new_sample(in_port)
-                assert warp_task.running?
-                out_port.write(sample)
-                assert_event_emission warp_task.success_event
             end
         end
     end

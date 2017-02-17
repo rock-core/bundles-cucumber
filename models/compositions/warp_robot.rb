@@ -8,6 +8,8 @@ module Cucumber
         #
         # It never finished
         class WarpRobot < Syskit::Composition
+            argument :pose
+
             # The model that will be warped
             #
             # When overloading the cucumber_warp_robot action, it is
