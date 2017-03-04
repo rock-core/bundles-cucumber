@@ -28,7 +28,10 @@ end
 When(/^after (.*)$/) do |delay|
     delay, _ = Roby::App::CucumberHelpers.parse_numerical_value(delay, :time)
     roby_controller.apply_current_batch
-    sleep(delay)
+    start = Time.now
+    roby_controller.roby_poll_interface_until do
+        Time.now - start > delay
+    end
 end
 
 When(/^it runs the (.*) (action|definition)$/) do |action_name, action_kind|
