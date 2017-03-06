@@ -56,7 +56,7 @@ Then(/^the pose reaches (.*) with a tolerance of (.*) within (.*)$/) do |pose, t
         pose: pose, position_tolerance: position_tolerance,
         orientation_tolerance: orientation_tolerance, timeout: timeout
 end
-Then(/^it is (.*) within (.*)$/) do |event_name, timeout|
+Then(/^it (?:is|has) (.*) within (.*)$/) do |event_name, timeout|
     timeout, _ = Roby::App::CucumberHelpers.parse_numerical_value(timeout)
     roby_controller.run_job 'cucumber_job_emits_event',
         monitored_job_id: roby_controller.last_main_job_id, event_name: event_name.to_sym, timeout: timeout
