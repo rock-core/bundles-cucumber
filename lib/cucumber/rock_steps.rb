@@ -23,14 +23,18 @@ Given(/^the (\w+) robot starting at (.*) in (?:the )?(.*)$/) do |robot_name, sta
         pose: pose, position_tolerance: Eigen::Vector3.new(0.01, 0.01, 0.5),
         orientation_tolerance: Eigen::Vector3.new(0.001, 0.001, 0.001), timeout: 10
     # The warp job is not a monitoring job, it's not automatically stopped by run_job
-    roby_controller.drop_jobs warp_job
+    if !roby_controller.validation_mode?
+        roby_controller.drop_jobs warp_job
+    end
 end
 When(/^after (.*)$/) do |delay|
     delay, _ = Roby::App::CucumberHelpers.parse_numerical_value(delay, :time)
     roby_controller.apply_current_batch
-    start = Time.now
-    roby_controller.roby_poll_interface_until do
-        Time.now - start > delay
+    if !roby_controller.validation_mode?
+        start = Time.now
+        roby_controller.roby_poll_interface_until do
+            Time.now - start > delay
+        end
     end
 end
 
