@@ -58,6 +58,11 @@ Then(/^the pose reaches (.*) with a tolerance of (.*) within (.*)$/) do |pose, t
 end
 Then(/^it (?:is|has) (.*) within (.*)$/) do |event_name, timeout|
     timeout, _ = Roby::App::CucumberHelpers.parse_numerical_value(timeout)
+    roby_controller.apply_current_batch
+    last_job_id = roby_controller.last_main_job_id
+    if !last_job_id && !roby_controller.validation_mode?
+        raise "no main job started, on which to wait for event #{event_name}"
+    end
     roby_controller.run_job 'cucumber_job_emits_event',
         monitored_job_id: roby_controller.last_main_job_id, event_name: event_name.to_sym, timeout: timeout
 end
