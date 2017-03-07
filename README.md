@@ -90,6 +90,39 @@ envvar set to 1:
 The actions will not be executed, only the action names will be validated, as
 well as the fact that the action arguments match the expected arguments.
 
+== Defined Steps
+
+The feature language embeds a few non-standard constructs that are used within the steps.
+
+A "struct" with fields is expressed with a comma-separated list of `key=value` pairs which
+may end with `and last_key=last_value`, for instance: `x=10, y=20 and z=0`. Recursive
+structs can be built by enclosing the inner struct with `{}`, e.g. `setpoint={x=10m}`.
+
+The steps understand units, which are converted into their SI equivalent. In some specific
+cases (e.g. the positions, angles), the unit is known and the steps validate that the
+values given to them is of the expected unit. One adds a unit to a value with by appending
+the unit's symbol (e.g. `10m`)
+
+**Known units**: `m` (meter, length), `h` (hour, time), `min` (minutes, time), `s`
+(seconds, time) and `deg` (degrees, angle)
+
+In the step description below, the following placeholders are used:
+
+A `POSE` is a subset of `x`, `y`, `z`, `yaw`, `pitch` and `roll`.  `x`, `y` and `z` are
+lengths and `yaw`, `pitch`, `roll` angles. The interpretation of a pose with some
+missing fields is step-specific, and will be described along with the step.
+
+A `TIME` is a time value.
+
+A `XXXX_NAME` is a list of space-separated words whose interpretation is step-specific.
+
+`Given the ROBOT_NAME robot starting at POSITION in WORLD_NAME` or `Given the ROBOT_NAME robot starting at POSITION in the WORLD_NAME`
+
+Starts a simulation using the world `WORLD_NAME`, and the Roby controller under the
+`ROBOT_NAME` configuration. Move the robot in the simulated world at `POSITION`.  Zero is
+used in place of unspecified pose coordinates (e.g. `x=5m and y=2m` would set `z`, `yaw`,
+`pitch` and `roll` to zero).
+
 == Manual Installation
 
 Adding cucumber to a bundle requires a number of steps (in addition to adding
