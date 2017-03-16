@@ -52,6 +52,18 @@ module Cucumber
             return pose, position_tolerance, orientation_tolerance
         end
 
+        def self.parse_pose_tolerance(tolerance_text)
+            tolerance_args = Roby::App::CucumberHelpers.parse_arguments(tolerance_text, POSE_QUANTITIES, strict: true)
+
+            position_tolerance = hash_xyz_to_vector3(tolerance_args, default: Float::INFINITY)
+
+            orientation_tolerance = Eigen::Vector3.new
+            orientation_tolerance.x = tolerance_args.fetch(:yaw, Float::INFINITY)
+            orientation_tolerance.y = tolerance_args.fetch(:pitch, Float::INFINITY)
+            orientation_tolerance.z = tolerance_args.fetch(:roll, Float::INFINITY)
+            return position_tolerance, orientation_tolerance
+        end
+
         def self.massage_action_name(action_name, action_kind)
             action_name = action_name.gsub(/\s/, '_')
             if action_kind == 'definition'

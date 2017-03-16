@@ -1,6 +1,7 @@
 require 'models/compositions/warp_robot'
 require 'models/compositions/reach_pose'
 require 'models/compositions/maintain_pose'
+require 'models/compositions/acquire_current_pose'
 require 'models/tasks/job_emits_event'
 require 'models/tasks/settle'
 
@@ -33,6 +34,34 @@ module Cucumber
                 returns(Compositions::MaintainPose)
             def cucumber_maintain_pose(arguments)
                 Compositions::MaintainPose.with_arguments(arguments)
+            end
+
+            describe('acquires the current pose and embeds it into its success event as a Types.base.Pose object').
+                optional_arg(:timeout, 'how long the pose acquisition is allowed to take', 1).
+                returns(Compositions::AcquireCurrentPose)
+            def cucumber_acquire_current_pose(timeout: 1)
+                Compositions::AcquireCurrentPose.with_arguments(timeout: timeout)
+            end
+
+            describe('verifies that the vehicle stays at its current pose during a certain timeframe').
+                required_arg(:position_tolerance, 'the position tolerance, as a Eigen::Vector3. Use Base.unset to ignore an axis.').
+                required_arg(:orientation_tolerance, 'the orientation tolerance, as a Eigen::Vector3 (RPY). Use Base.unset to ignore an axis.').
+                required_arg(:acquisition_timeout, 'how long the pose acquisition is allowed to take').
+                required_arg(:duration, 'how long the pose should be maintained in seconds')
+            action_state_machine 'cucumber_stays_still' do
+                acquire = state(cucumber_acquire_current_pose(timeout: acquisition_timeout))
+                start(acquire)
+                current_pose = capture(acquire.success_event) do |event|
+                    rbs = event.context.first
+                    Types.base.Pose.new(
+                        position: rbs.position,
+                        orientation: rbs.orientation)
+                end
+
+                maintain_pose = state(cucumber_maintain_pose(
+                    pose: current_pose, position_tolerance: position_tolerance, orientation_tolerance: orientation_tolerance, duration: duration))
+                transition acquire.success_event, maintain_pose
+                forward maintain_pose.success_event, success_event
             end
 
             describe('verifies that an event is emitted within a certain timeframe').

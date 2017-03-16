@@ -38,6 +38,15 @@ When(/^after (.*)$/) do |delay|
     end
 end
 
+Then(/^it stays still during (.*) with a tolerance of (.*)$/) do |duration, pose_tolerance|
+    position_tolerance, orientation_tolerance = Cucumber::RockHelpers.parse_pose_tolerance(pose_tolerance)
+    duration, _ = Roby::App::CucumberHelpers.parse_numerical_value(duration)
+    roby_controller.run_job 'cucumber_stays_still',
+        position_tolerance: position_tolerance,
+        orientation_tolerance: orientation_tolerance,
+        acquisition_timeout: 5,
+        duration: duration
+end
 When(/^it runs the (.*) (action|definition)$/) do |action_name, action_kind|
     action_name = Cucumber::RockHelpers.massage_action_name(action_name, action_kind)
     roby_controller.start_job "When it runs #{action_name}",
