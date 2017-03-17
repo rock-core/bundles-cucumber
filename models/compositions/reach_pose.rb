@@ -12,7 +12,7 @@ module Cucumber
             attr_reader :matching_pose
 
             script do
-                pose_r = pose_child.pose_samples_port.reader
+                pose_r = pose_child.pose_samples_port.reader(type: :buffer, size: 10)
 
                 poll_until(success_event) do
                     if sample = pose_r.read_new

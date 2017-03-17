@@ -23,14 +23,30 @@ Given(/^the (\w+) robot starting at (.*) in (?:the )?(.*)$/) do |robot_name, sta
         pose: pose, position_tolerance: Eigen::Vector3.new(0.01, 0.01, 0.5),
         orientation_tolerance: Eigen::Vector3.new(0.001, 0.001, 0.001), timeout: 10
     # The warp job is not a monitoring job, it's not automatically stopped by run_job
-    roby_controller.drop_jobs warp_job
+    if !roby_controller.validation_mode?
+        roby_controller.drop_jobs warp_job
+    end
 end
 When(/^after (.*)$/) do |delay|
     delay, _ = Roby::App::CucumberHelpers.parse_numerical_value(delay, :time)
     roby_controller.apply_current_batch
-    sleep(delay)
+    if !roby_controller.validation_mode?
+        start = Time.now
+        roby_controller.roby_poll_interface_until do
+            Time.now - start > delay
+        end
+    end
 end
 
+Then(/^it stays still during (.*) with a tolerance of (.*)$/) do |duration, pose_tolerance|
+    position_tolerance, orientation_tolerance = Cucumber::RockHelpers.parse_pose_tolerance(pose_tolerance)
+    duration, _ = Roby::App::CucumberHelpers.parse_numerical_value(duration)
+    roby_controller.run_job 'cucumber_stays_still',
+        position_tolerance: position_tolerance,
+        orientation_tolerance: orientation_tolerance,
+        acquisition_timeout: 5,
+        duration: duration
+end
 When(/^it runs the (.*) (action|definition)$/) do |action_name, action_kind|
     action_name = Cucumber::RockHelpers.massage_action_name(action_name, action_kind)
     roby_controller.start_job "When it runs #{action_name}",
@@ -49,8 +65,13 @@ Then(/^the pose reaches (.*) with a tolerance of (.*) within (.*)$/) do |pose, t
         pose: pose, position_tolerance: position_tolerance,
         orientation_tolerance: orientation_tolerance, timeout: timeout
 end
-Then(/^it is (.*) within (.*)$/) do |event_name, timeout|
+Then(/^it (?:is|has) (.*) within (.*)$/) do |event_name, timeout|
     timeout, _ = Roby::App::CucumberHelpers.parse_numerical_value(timeout)
+    roby_controller.apply_current_batch
+    last_job_id = roby_controller.last_main_job_id
+    if !last_job_id && !roby_controller.validation_mode?
+        raise "no main job started, on which to wait for event #{event_name}"
+    end
     roby_controller.run_job 'cucumber_job_emits_event',
         monitored_job_id: roby_controller.last_main_job_id, event_name: event_name.to_sym, timeout: timeout
 end

@@ -20,6 +20,10 @@ module Cucumber
                     def cucumber_maintain_pose(arguments)
                         super.use('pose' => stub_model_m)
                     end
+
+                    def cucumber_acquire_current_pose(arguments)
+                        super.use('pose' => stub_model_m)
+                    end
                 end
             end
 
@@ -75,6 +79,46 @@ module Cucumber
                     assert_equal tol_p, task.position_tolerance
                     assert_equal tol_q, task.orientation_tolerance
                     assert_equal 20, task.duration
+                end
+            end
+
+            describe "cucumber_stays_still" do
+                it "acquires the pose and then runs a maintain_pose on it" do
+                    rbs = Types.base.samples.RigidBodyState.Invalid
+                    rbs.position = Eigen::Vector3.Zero
+                    rbs.orientation = Eigen::Quaternion.Identity
+                    expected_pose = Types.base.Pose.new
+                    expected_pose.position = Eigen::Vector3.Zero
+                    expected_pose.orientation = Eigen::Quaternion.Identity
+
+                    task = plan.add_permanent_task(
+                        stub_interface_m.cucumber_stays_still.with_arguments(
+                            position_tolerance: (tol_p = Eigen::Vector3.new),
+                            orientation_tolerance: (tol_q = Eigen::Quaternion.from_angle_axis(0.1, Eigen::Vector3.UnitZ)),
+                            acquisition_timeout: 10,
+                            duration: 20))
+                    task = roby_run_planner(task)
+
+                    current_task = task.current_task_child
+                    assert_kind_of Compositions::AcquireCurrentPose, current_task
+                    assert_equal 10, current_task.timeout
+                    syskit_configure_and_start(current_task)
+
+                    assert_state_machine_transition task, to_state: 'maintain_pose' do
+                        current_task.pose_child.orocos_task.pose_samples.write(rbs)
+                    end
+
+                    current_task = task.current_task_child
+                    assert_kind_of Compositions::MaintainPose, current_task
+                    assert_equal expected_pose, current_task.pose
+                    assert_equal tol_p, current_task.position_tolerance
+                    assert_equal tol_q, current_task.orientation_tolerance
+                    assert_equal 20, current_task.duration
+
+                    syskit_configure_and_start(current_task)
+                    assert_event_emission task.success_event do
+                        current_task.success_event.emit
+                    end
                 end
             end
         end
