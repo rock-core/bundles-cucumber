@@ -60,11 +60,25 @@ When(/^it runs the (.*) (action|definition) with (.*)$/) do |action_name, action
 end
 Then(/^the pose reaches (.*) with a tolerance of (.*) within (.*)$/) do |pose, tolerance, timeout|
     pose, position_tolerance, orientation_tolerance = Cucumber::RockHelpers.parse_pose_and_tolerance(pose, tolerance)
+    $last_reaches_step = [pose, position_tolerance, orientation_tolerance]
     timeout, _ = Roby::App::CucumberHelpers.parse_numerical_value(timeout)
     roby_controller.run_job 'cucumber_reach_pose',
         pose: pose, position_tolerance: position_tolerance,
         orientation_tolerance: orientation_tolerance, timeout: timeout
 end
+Then(/^it stays there for (.*)$/) do |duration|
+    if !$last_reaches_step
+        raise ArgumentError, "can only use 'it stays there for Xs' after a 'the pose reaches ...' step"
+    end
+    pose, position_tolerance, orientation_tolerance = *$last_reaches_step
+
+    description = "The pose is maintained at #{pose} with a tolerance of #{position_tolerance} and #{orientation_tolerance}"
+    roby_controller.start_monitoring_job description, 'cucumber_maintain_pose',
+        pose: pose, duration: nil,
+        position_tolerance: position_tolerance,
+        orientation_tolerance: orientation_tolerance
+end
+
 Then(/^it (?:is|has) (.*) within (.*)$/) do |event_name, timeout|
     timeout, _ = Roby::App::CucumberHelpers.parse_numerical_value(timeout)
     roby_controller.apply_current_batch
