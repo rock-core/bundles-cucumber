@@ -70,11 +70,11 @@ Then(/^it stays there for (.*)$/) do |duration|
     if !$last_reaches_step
         raise ArgumentError, "can only use 'it stays there for Xs' after a 'the pose reaches ...' step"
     end
-    pose, position_tolerance, orientation_tolerance = *$last_reaches_step
 
-    description = "The pose is maintained at #{pose} with a tolerance of #{position_tolerance} and #{orientation_tolerance}"
-    roby_controller.start_monitoring_job description, 'cucumber_maintain_pose',
-        pose: pose, duration: nil,
+    pose, position_tolerance, orientation_tolerance = *$last_reaches_step
+    duration, _ = Roby::App::CucumberHelpers.parse_numerical_value(duration, :time)
+    roby_controller.run_job 'cucumber_maintain_pose',
+        pose: pose, duration: duration,
         position_tolerance: position_tolerance,
         orientation_tolerance: orientation_tolerance
 end
