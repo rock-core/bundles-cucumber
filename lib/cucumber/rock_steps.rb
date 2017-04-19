@@ -1,6 +1,15 @@
 require 'cucumber/rock_helpers'
 
-Given(/^the (\w+) robot starting at (.*) in (?:the )?(.*)$/) do |robot_name, start_position, world|
+Given(/^the (\w+) robot starting at (.*) in (?:the )?(.*?)(?: with (.*))?$/) do |robot_name, start_position, world, arguments|
+    if arguments && !arguments.empty?
+        arguments = Roby::App::CucumberHelpers.parse_arguments(arguments, Hash.new, strict: false)
+    else
+        arguments = Hash.new
+    end
+    arguments = arguments.map_key do |k, v|
+        k.to_s
+    end
+
     if start_position == 'origin'
         start_position = Hash[x: 0, y: 0, z: 0, yaw: 0]
     else
@@ -8,7 +17,7 @@ Given(/^the (\w+) robot starting at (.*) in (?:the )?(.*)$/) do |robot_name, sta
     end
     world = world.gsub(/\s/, '_')
     roby_controller.roby_start robot_name, robot_name,
-        state: Hash['sdf.world_path' => world, 'gazebo.localhost' => true]
+        state: Hash['sdf.world_path' => world, 'gazebo.localhost' => true].merge(arguments)
     gazebo_start world, working_directory: roby_controller.roby_log_dir
 
     roby_controller.run_job 'cucumber_settle'
