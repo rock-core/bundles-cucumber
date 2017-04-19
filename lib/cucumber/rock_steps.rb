@@ -22,6 +22,16 @@ Given(/^the (\w+) robot starting at (.*) in (?:the )?(.*?)(?: with (.*))?$/) do 
 
     roby_controller.run_job 'cucumber_settle'
 
+    @given_actions ||= Array.new
+    begin
+        @given_actions.each do |action_name, action_arguments|
+            roby_controller.start_job "Given #{action_name} running with #{action_arguments}",
+                action_name, action_arguments
+        end
+    ensure
+        @given_actions.clear
+    end
+
     x, y, z, yaw = start_position.values_at(:x, :y, :z, :yaw)
     pose = Types.base.Pose.new(
         position: Eigen::Vector3.new(x || 0, y || 0, z || 0),
@@ -55,6 +65,17 @@ Then(/^it stays still during (.*) with a tolerance of (.*)$/) do |duration, pose
         orientation_tolerance: orientation_tolerance,
         acquisition_timeout: 5,
         duration: duration
+end
+Given(/^the (.*) (action|definition) running$/) do |action_name, action_kind|
+    action_name = Cucumber::RockHelpers.massage_action_name(action_name, action_kind)
+    @given_actions ||= Array.new
+    @given_actions << [action_name, Hash.new]
+end
+Given(/^the (.*) (action|definition) running with (.*)$/) do |action_name, action_kind, raw_arguments|
+    action_name = Cucumber::RockHelpers.massage_action_name(action_name, action_kind)
+    arguments   = Roby::App::CucumberHelpers.parse_arguments(raw_arguments, strict: false)
+    @given_actions ||= Array.new
+    @given_actions << [action_name, arguments]
 end
 When(/^it runs the (.*) (action|definition)$/) do |action_name, action_kind|
     action_name = Cucumber::RockHelpers.massage_action_name(action_name, action_kind)
