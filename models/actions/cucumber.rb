@@ -8,6 +8,28 @@ require 'models/tasks/settle'
 module Cucumber
     module Actions
         # Actions required for the Cucumber/Syskit integration
+        #
+        # Subclass it into your bundle and inject the robot-under-test into
+        # the return value of the pose-related actions:
+        #
+        #     class Cucumber << Cucumber::Actions::Cucumber
+        #       def cucumber_warp_robot(**)
+        #           super.use(Base.motoman_dev)
+        #       end
+        #
+        #       def cucumber_maintain_pose(**)
+        #           super.use(Base.motoman_dev)
+        #       end
+        #
+        #       def cucumber_reach_pose(**)
+        #           super.use(Base.motoman_dev)
+        #       end
+        #
+        #       def cucumber_acquire_current_pose(**)
+        #           super.use(Base.motoman_dev)
+        #       end
+        #     end
+        #
         class Cucumber < Roby::Actions::Interface
             describe('cucumber_warp_robot').
                 required_arg(:pose, 'the pose the robot should be placed at').
