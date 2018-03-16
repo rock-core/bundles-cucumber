@@ -1,4 +1,4 @@
-= Cucumber/Rock integration for Syskit apps
+# Cucumber/Rock integration for Syskit apps
 
 This bundle implements the basic support to use Cucumber for acceptance testing
 in your Syskit apps. This integration assumes that you use Gazebo as your
@@ -7,14 +7,14 @@ system's simulator
 The rest of this readme will deal with the basic work required to add Cucumber
 support to your bundle using this integration
 
-== Initialization
+## Initialization
 
 The integration requires some bundle-specific work. The simple bits of this work
 is automated, but it is possible that you would need to "tune" it to match your
 needs. You may also want to see the [Manual
 Installation](#manual-installation) section at the end of the document.
 
-=== Dependencies
+### Dependencies
 
 The first step is to (manually) add the bundle in your own app's dependency
 list, that is:
@@ -22,9 +22,7 @@ list, that is:
  - add cucumber to the list of dependencies in your bundles's
    `config/bundle.yml`
 
-=== Automated Way
-
-TBD, Idea:
+### Automated Way (TBD, Not implemented yet)
 
 The automated integration assumes that you have a 'simulation' robot
 configuration, and that this configuration has a profile in which the robot's
@@ -40,9 +38,9 @@ profile and a `cucumber` robot that respectively define the actions required by
 the cucumber steps themselves, and add it to the main action interface on top of
 your simulated robot's actions.
 
-== Usage
+## Usage
 
-=== Step definitions
+### Step definitions
 
 The bundle implements a number of Cucumber steps. Generally speaking, the
 structure is a Given that defines a robot and gazebo world, and a list of
@@ -69,7 +67,7 @@ For instance:
     # Both monitors are dropped when this condition finishes
     And the pose reaches yaw=15deg with a tolerance of 2deg within 2min
 
-=== Running the steps
+### Running the steps
 
 One runs the steps the normal cucumber way
 
@@ -79,7 +77,7 @@ or
 
     cucumber features/feature_file.features
 
-=== Validating the steps
+### Validating the steps
 
 A special validation mode can be used to validate the action names and the list
 of action arguments. Call the cucumber features with the `ROBY_VALIDATE_STEPS`
@@ -90,7 +88,7 @@ envvar set to 1:
 The actions will not be executed, only the action names will be validated, as
 well as the fact that the action arguments match the expected arguments.
 
-== Defined Steps
+## Defined Steps
 
 The feature language embeds a few non-standard constructs that are used within the steps.
 
@@ -123,7 +121,7 @@ Starts a simulation using the world `WORLD_NAME`, and the Roby controller under 
 used in place of unspecified pose coordinates (e.g. `x=5m and y=2m` would set `z`, `yaw`,
 `pitch` and `roll` to zero).
 
-== Manual Installation
+## Manual Installation
 
 Adding cucumber to a bundle requires a number of steps (in addition to adding
 the dependencies as described above). The best way is probably to run the syskit
