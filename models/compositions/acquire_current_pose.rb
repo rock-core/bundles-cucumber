@@ -1,4 +1,4 @@
-require 'rock/models/services/pose'
+require 'common_models/models/services/pose'
 
 module Cucumber
     module Compositions
@@ -7,7 +7,7 @@ module Cucumber
         class AcquireCurrentPose < Syskit::Composition
             argument :timeout
 
-            add Rock::Services::Pose, as: 'pose'
+            add CommonModels::Services::Pose, as: 'pose'
 
             event :timed_out
             forward :timed_out => :failed

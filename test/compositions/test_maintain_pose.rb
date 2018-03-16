@@ -41,7 +41,7 @@ module Cucumber
                         process_events
                     end
                 end
-                assert_event_emission maintain_pose.success_event
+                assert maintain_pose.success_event.emitted?
             end
 
             it "fails at the end of the period if no samples were ever received" do

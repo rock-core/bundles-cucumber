@@ -1,4 +1,5 @@
 require 'models/actions/cucumber'
+using_task_library 'rock_gazebo'
 
 module Cucumber
     module Actions
@@ -98,8 +99,11 @@ module Cucumber
                             acquisition_timeout: 10,
                             duration: 20))
                     task = roby_run_planner(task)
+                    refute task.running?
+                    expect_execution { task.start! }.to { start task }
 
                     current_task = task.current_task_child
+                    current_task = roby_run_planner(current_task)
                     assert_kind_of Compositions::AcquireCurrentPose, current_task
                     assert_equal 10, current_task.timeout
                     syskit_configure_and_start(current_task)

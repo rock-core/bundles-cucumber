@@ -29,6 +29,7 @@ module Cucumber
             end
 
             it "writes the pose to its designated model" do
+                syskit_start(@warp_task)
                 pose = assert_has_one_new_sample(in_port)
                 assert_equal pose.position, pose.position
                 assert_equal pose.orientation, pose.orientation
