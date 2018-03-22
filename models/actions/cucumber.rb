@@ -9,33 +9,31 @@ module Cucumber
     module Actions
         # Actions required for the Cucumber/Syskit integration
         #
-        # Subclass it into your bundle and inject the robot-under-test into
+        # Subclass it into your bundle and redefine {#cucumber_robot_model}
+        # This method is passed to a `use()` statement on the Cucumber-related
+        # compositions, and should inject the model-under-test. It must be
+        # a root model.
+        # 
         # the return value of the pose-related actions:
         #
-        #     class Cucumber << Cucumber::Actions::Cucumber
-        #       def cucumber_warp_robot(**)
-        #           super.use(Base.motoman_dev)
-        #       end
-        #
-        #       def cucumber_maintain_pose(**)
-        #           super.use(Base.motoman_dev)
-        #       end
-        #
-        #       def cucumber_reach_pose(**)
-        #           super.use(Base.motoman_dev)
-        #       end
-        #
-        #       def cucumber_acquire_current_pose(**)
-        #           super.use(Base.motoman_dev)
+        #     class Cucumber < Cucumber::Actions::Cucumber
+        #       def cucumber_robot_model
+        #         # This must be ur10_fixed_dev since ur10_dev is a submodel
+        #         Base.ur10_fixed_dev
         #       end
         #     end
         #
         class Cucumber < Roby::Actions::Interface
+            def cucumber_robot_model
+                CommonModels::Devices::Gazebo::RootModel
+            end
+
             describe('cucumber_warp_robot').
                 required_arg(:pose, 'the pose the robot should be placed at').
                 returns(Compositions::WarpRobot)
             def cucumber_warp_robot(arguments)
-                Compositions::WarpRobot.with_arguments(arguments)
+                Compositions::WarpRobot.with_arguments(arguments).
+                    use(cucumber_robot_model)
             end
 
             describe('verifies that the vehicle maintains a pose with tolerance for a specified amount of time').
@@ -45,7 +43,8 @@ module Cucumber
                 required_arg(:timeout, 'the duration, in seconds, into which the pose should reach the expected').
                 returns(Compositions::ReachPose)
             def cucumber_reach_pose(arguments)
-                Compositions::ReachPose.with_arguments(arguments)
+                Compositions::ReachPose.with_arguments(arguments).
+                    use(cucumber_robot_model)
             end
 
             describe('verifies that the vehicle maintains a pose with tolerance for a specified amount of time').
@@ -55,14 +54,16 @@ module Cucumber
                 required_arg(:duration, 'how long the pose should be maintained in seconds').
                 returns(Compositions::MaintainPose)
             def cucumber_maintain_pose(arguments)
-                Compositions::MaintainPose.with_arguments(arguments)
+                Compositions::MaintainPose.with_arguments(arguments).
+                    use(cucumber_robot_model)
             end
 
             describe('acquires the current pose and embeds it into its success event as a Types.base.Pose object').
                 optional_arg(:timeout, 'how long the pose acquisition is allowed to take', 1).
                 returns(Compositions::AcquireCurrentPose)
             def cucumber_acquire_current_pose(timeout: 1)
-                Compositions::AcquireCurrentPose.with_arguments(timeout: timeout)
+                Compositions::AcquireCurrentPose.with_arguments(timeout: timeout).
+                    use(cucumber_robot_model)
             end
 
             describe('verifies that the vehicle stays at its current pose during a certain timeframe').
