@@ -1,9 +1,9 @@
-require 'models/compositions/warp_robot'
-require 'models/compositions/reach_pose'
-require 'models/compositions/maintain_pose'
-require 'models/compositions/acquire_current_pose'
-require 'models/tasks/job_emits_event'
-require 'models/tasks/settle'
+require 'cucumber/models/compositions/warp_robot'
+require 'cucumber/models/compositions/reach_pose'
+require 'cucumber/models/compositions/maintain_pose'
+require 'cucumber/models/compositions/acquire_current_pose'
+require 'cucumber/models/tasks/job_emits_event'
+require 'cucumber/models/tasks/settle'
 
 module Cucumber
     module Actions

@@ -1,4 +1,4 @@
-require 'models/actions/cucumber'
+require 'cucumber/models/actions/cucumber'
 using_task_library 'rock_gazebo'
 
 module Cucumber

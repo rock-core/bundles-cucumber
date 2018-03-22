@@ -1,4 +1,4 @@
-require 'models/compositions/maintain_pose'
+require 'cucumber/models/compositions/maintain_pose'
 require 'timecop'
 
 module Cucumber

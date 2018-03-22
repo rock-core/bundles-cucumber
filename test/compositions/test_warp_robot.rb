@@ -1,4 +1,4 @@
-require 'models/compositions/warp_robot'
+require 'cucumber/models/compositions/warp_robot'
 
 module Cucumber
     module Compositions

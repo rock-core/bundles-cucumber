@@ -1,4 +1,4 @@
-require 'models/tasks/settle'
+require 'cucumber/models/tasks/settle'
 
 module Cucumber
     module Tasks

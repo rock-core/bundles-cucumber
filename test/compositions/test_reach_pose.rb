@@ -1,4 +1,4 @@
-require 'models/compositions/reach_pose'
+require 'cucumber/models/compositions/reach_pose'
 require 'timecop'
 
 module Cucumber
