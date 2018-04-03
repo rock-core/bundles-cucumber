@@ -1,5 +1,5 @@
-require 'models/compositions/pose_predicate'
-using_task_library 'rock_gazebo'
+require 'common_models/models/devices/gazebo/root_model'
+require 'cucumber/models/compositions/pose_predicate'
 
 module Cucumber
     module Compositions
@@ -14,7 +14,7 @@ module Cucumber
             #
             # When overloading the cucumber_warp_robot action, it is
             # automatically used for the pose_child as well
-            add OroGen::RockGazebo::ModelTask, as: 'model'
+            add CommonModels::Devices::Gazebo::RootModel, as: 'model'
 
             # The target pose a Types.base.samples.RigidBodyState, ready to be
             # sent to model_child

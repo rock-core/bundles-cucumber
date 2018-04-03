@@ -1,4 +1,4 @@
-require 'models/compositions/acquire_current_pose'
+require 'cucumber/models/compositions/acquire_current_pose'
 require 'timecop'
 
 module Cucumber

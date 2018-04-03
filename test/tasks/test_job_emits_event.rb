@@ -1,4 +1,4 @@
-require 'models/tasks/job_emits_event'
+require 'cucumber/models/tasks/job_emits_event'
 require 'roby/tasks/simple'
 
 module Cucumber

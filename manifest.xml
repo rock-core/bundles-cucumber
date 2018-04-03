@@ -1,23 +1,13 @@
 <package>
   <description brief="Actions required by the Cucumber integration">
-  
   </description>
-  <author>/</author>
-  <license></license>
-  <url>http://</url>
-  <logo>http://</logo>
+
+  <author>Sylvain Joyeux/sylvain.joyeux@13robotics.com</author>
+  <license>BSD</license>
 
   <depend package="tools/syskit" />
-  <depend package="bundles/rock" />
+  <depend package="bundles/common_models" />
   <depend package="cucumber" />
-  <!--
-   To add any dependencies use the depend tag
-  <depend package="dummy-dependency-0" />
-	...
-  <depend package="dummy-dependency-n-1" />
-  <depend package="dummy-dependency-n" />
-  -->
-  <depend package="bundles/rock" />
   <depend package="simulation/rock_gazebo" />
   <test_depend package="timecop" />
 </package>

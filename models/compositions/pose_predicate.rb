@@ -1,5 +1,5 @@
 require 'base/float'
-require 'rock/models/services/pose'
+require 'common_models/models/services/pose'
 
 module Cucumber
     module Compositions
@@ -21,7 +21,7 @@ module Cucumber
             argument :orientation_tolerance
 
             # The pose source
-            add Rock::Services::Pose, as: 'pose'
+            add CommonModels::Services::Pose, as: 'pose'
             
             # The last received pose as a Types.base.samples.RigidBodyState
             # object

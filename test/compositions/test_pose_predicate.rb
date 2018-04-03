@@ -1,4 +1,4 @@
-require 'models/compositions/pose_predicate'
+require 'cucumber/models/compositions/pose_predicate'
 
 module Cucumber
     module Compositions

@@ -1,4 +1,3 @@
-
 module Cucumber
     module Tasks
         class Settle < Roby::Task
