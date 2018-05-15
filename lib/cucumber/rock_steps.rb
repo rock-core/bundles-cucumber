@@ -46,6 +46,35 @@ Given(/^the (\w+) robot starting at (.*) in (?:the )?(.*?)(?: with (.*))?$/) do 
         roby_controller.drop_jobs warp_job
     end
 end
+
+Given(/^the (\w+) robot in (?:the )?(.*?)(?: with (.*))?$/) do |robot_name, world, arguments|
+    if arguments && !arguments.empty?
+        arguments = Roby::App::CucumberHelpers.parse_arguments(arguments, Hash.new, strict: false)
+    else
+        arguments = Hash.new
+    end
+    arguments = arguments.map_key do |k, v|
+        k.to_s
+    end
+
+    world = world.gsub(/\s/, '_')
+    roby_controller.roby_start robot_name, robot_name,
+        state: Hash['sdf.world_path' => world, 'gazebo.localhost' => true].merge(arguments)
+    gazebo_start world, working_directory: roby_controller.roby_log_dir
+
+    roby_controller.run_job 'cucumber_settle'
+
+    @given_actions ||= Array.new
+    begin
+        @given_actions.each do |action_name, action_arguments|
+            roby_controller.start_job "Given #{action_name} running with #{action_arguments}",
+                action_name, action_arguments
+        end
+    ensure
+        @given_actions.clear
+    end
+end
+
 When(/^after (.*)$/) do |delay|
     delay, _ = Roby::App::CucumberHelpers.parse_numerical_value(delay, :time)
     roby_controller.apply_current_batch
